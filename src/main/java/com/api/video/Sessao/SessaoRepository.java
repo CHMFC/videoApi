@@ -1,6 +1,7 @@
 package com.api.video.Sessao;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,9 +20,10 @@ public interface SessaoRepository extends JpaRepository<Sessao, UUID> {
     @Modifying
     @Query(value = """
         INSERT INTO sessao (id, id_usuario, chave_sessao, horario_login, expired)
-        VALUES (:id, :idUsuario, :chaveSessao, CURRENT_TIMESTAMP, false)
+        VALUES (:id, :idUsuario, :chaveSessao, :currentTime, false)
     """, nativeQuery = true)
-    void registrarSessao(@Param("id") UUID id, @Param("idUsuario") UUID idUsuario, @Param("chaveSessao") String chaveSessao);
+    void registrarSessao(@Param("id") UUID id, @Param("idUsuario") UUID idUsuario, @Param("chaveSessao") String chaveSessao,
+                         @Param("currentTime") LocalDateTime currentTime);
 
     @Query("""
         SELECT s.expired
@@ -58,7 +60,7 @@ public interface SessaoRepository extends JpaRepository<Sessao, UUID> {
     FROM Sessao s
     WHERE s.usuario.id = :idUsuario AND s.expired = false
 """)
-    Optional<Sessao> buscarSessaoValidaPorUsuario(@Param("idUsuario") UUID idUsuario);
+    List<Sessao> buscarSessaoValidaPorUsuario(@Param("idUsuario") UUID idUsuario);
 
 
 }

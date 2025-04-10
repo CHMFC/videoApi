@@ -17,9 +17,9 @@ public interface AlteracaoRepository extends JpaRepository<Alteracao, UUID> {
     @Transactional
     @Modifying
     @Query(value = """
-        INSERT INTO alteracoes (id, projeto_id, autor_id, descricao, data_alteracao, referencia_task, timestamp)
-        VALUES (:id, :projetoId, :autorId, :descricao, :dataAlteracao, :referenciaTaskId, :timestamp)
-    """, nativeQuery = true)
+                INSERT INTO alteracoes (id, projeto_id, autor_id, descricao, data_alteracao, referencia_task, timestamp)
+                VALUES (:id, :projetoId, :autorId, :descricao, :dataAlteracao, :referenciaTaskId, :timestamp)
+            """, nativeQuery = true)
     int criarAlteracao(
             @Param("id") UUID id,
             @Param("projetoId") UUID projetoId,
@@ -27,49 +27,43 @@ public interface AlteracaoRepository extends JpaRepository<Alteracao, UUID> {
             @Param("descricao") String descricao,
             @Param("dataAlteracao") LocalDate dataAlteracao,
             @Param("referenciaTaskId") UUID referenciaTaskId,
-            @Param("timestamp") int timestamp
-    );
+            @Param("timestamp") int timestamp);
 
     @Transactional
     @Modifying
     @Query("""
-        UPDATE Alteracao a
-        SET a.descricao = :descricao,
-            a.dataAlteracao = :dataAlteracao,
-            a.referenciaTask.id = :taskId,
-            a.timestamp = :timestamp
-        WHERE a.id = :alteracaoId
-          AND a.projeto.criadoPor.id = :userId
-    """)
+                UPDATE Alteracao a
+                SET a.descricao = :descricao,
+                    a.referenciaTask.id = :taskId,
+                    a.timestamp = :timestamp
+                WHERE a.id = :alteracaoId
+                  AND a.projeto.criadoPor.id = :userId
+            """)
     int atualizarAlteracao(
             @Param("alteracaoId") UUID alteracaoId,
             @Param("descricao") String descricao,
-            @Param("dataAlteracao") LocalDate dataAlteracao,
             @Param("taskId") UUID taskId,
             @Param("timestamp") int timestamp,
-            @Param("userId") UUID userId
-    );
+            @Param("userId") UUID userId);
 
     @Transactional
     @Modifying
     @Query("""
-        DELETE FROM Alteracao a
-        WHERE a.id = :alteracaoId
-          AND a.projeto.criadoPor.id = :userId
-    """)
+                DELETE FROM Alteracao a
+                WHERE a.id = :alteracaoId
+                  AND a.projeto.criadoPor.id = :userId
+            """)
     int deletarAlteracao(
             @Param("alteracaoId") UUID alteracaoId,
-            @Param("userId") UUID userId
-    );
+            @Param("userId") UUID userId);
 
     @Query("""
-        SELECT a
-        FROM Alteracao a
-        WHERE a.projeto.id = :projetoId
-          AND a.projeto.criadoPor.id = :userId
-    """)
+                SELECT a
+                FROM Alteracao a
+                WHERE a.projeto.id = :projetoId
+                  AND a.projeto.criadoPor.id = :userId
+            """)
     List<Alteracao> buscarAlteracoesPorProjeto(
             @Param("projetoId") UUID projetoId,
-            @Param("userId") UUID userId
-    );
+            @Param("userId") UUID userId);
 }

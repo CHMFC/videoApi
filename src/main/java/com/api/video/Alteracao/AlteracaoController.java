@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/alteracoes")
@@ -41,6 +42,7 @@ public class AlteracaoController {
         private String descricao;
         private LocalDate dataAlteracao;
         private UUID taskId;
+        private int timestamp;  // novo campo para receber o valor do cliente
 
         public String getDescricao() { return descricao; }
         public void setDescricao(String descricao) { this.descricao = descricao; }
@@ -50,6 +52,10 @@ public class AlteracaoController {
 
         public UUID getTaskId() { return taskId; }
         public void setTaskId(UUID taskId) { this.taskId = taskId; }
+
+
+        public int getTimestamp() { return timestamp; }
+        public void setTimestamp(int timestamp) { this.timestamp = timestamp; }
     }
 
     @PostMapping("/criar")
@@ -76,8 +82,8 @@ public class AlteracaoController {
                 chaveSessao,
                 alteracaoId,
                 dto.getDescricao(),
-                dto.getDataAlteracao(),
-                dto.getTaskId()
+                dto.getTaskId(),
+                dto.getTimestamp()
         );
         return ResponseEntity.ok("Alteração atualizada com sucesso!");
     }
@@ -95,6 +101,8 @@ public class AlteracaoController {
             @RequestHeader("chaveSessao") String chaveSessao,
             @PathVariable("projetoId") UUID projetoId) {
         List<Alteracao> alteracoes = alteracaoService.buscarAlteracoesPorProjeto(chaveSessao, projetoId);
+        // Evitar comportamento recursivo:
+        alteracoes.forEach(a -> a.setProjeto(null));
         return ResponseEntity.ok(alteracoes);
     }
 }
